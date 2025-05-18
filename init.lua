@@ -56,10 +56,22 @@ function _G.statusline()
   statusline = statusline .. "%="
   statusline = statusline .. " %l:%c/%L "
   statusline = statusline .. " [%{&fileencoding?&fileencoding:&encoding}] "
-  statusline = statusline .. " " .. os.date "%Y-%m-%d %H:%M" .. " "
+  statusline = statusline .. " " .. os.date "%Y-%m-%d %I:%M:%S %p" .. " "
   return statusline
 end
+
 vim.opt.statusline = "%!v:lua.statusline()"
+---@diagnostic disable-next-line: undefined-field
+local timer = vim.loop.new_timer()
+timer:start(
+  1000,
+  1000,
+  vim.schedule_wrap(function()
+    -- Force statusline update
+    vim.cmd "redrawstatus"
+  end)
+)
+
 vim.opt.laststatus = 2
 
 -- Resize buffers when I am using more than 1
@@ -144,6 +156,16 @@ vim.keymap.set("n", "<leader>gg", function()
   -- Switch to terminal mode automatically
   vim.cmd "startinsert"
 end, { noremap = true, silent = true, desc = "Open lazygit in floating window" })
+
+-- Function to toggle line wrapping
+function _G.toggle_wrap()
+  local wrap_state = vim.wo.wrap
+  vim.wo.wrap = not wrap_state
+  print("Wrap " .. (vim.wo.wrap and "enabled" or "disabled"))
+end
+
+-- Key mapping to toggle wrap (using <Leader>w)
+vim.api.nvim_set_keymap("n", "<leader>w", ":lua toggle_wrap()<CR>", { noremap = true, silent = true })
 
 -- Load lazy
 require "config.lazy"
