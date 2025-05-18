@@ -167,5 +167,11 @@ end
 -- Key mapping to toggle wrap (using <Leader>w)
 vim.api.nvim_set_keymap("n", "<leader>w", ":lua toggle_wrap()<CR>", { noremap = true, silent = true })
 
+-- Use Ctrl+hjkl to navigate between splits/windows
+vim.keymap.set("n", "<C-h>", "<C-w>h", { noremap = true, silent = true, desc = "Move to left window" })
+vim.keymap.set("n", "<C-j>", "<C-w>j", { noremap = true, silent = true, desc = "Move to window below" })
+vim.keymap.set("n", "<C-k>", "<C-w>k", { noremap = true, silent = true, desc = "Move to window above" })
+vim.keymap.set("n", "<C-l>", "<C-w>l", { noremap = true, silent = true, desc = "Move to right window" })
+
 -- Load lazy
 require "config.lazy"
