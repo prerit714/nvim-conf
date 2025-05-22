@@ -3,7 +3,6 @@ vim.g.localleader = " "
 
 vim.o.number = true
 vim.o.mouse = "a"
-vim.o.showmode = true
 vim.o.breakindent = true
 vim.o.ignorecase = true
 vim.o.smartcase = true
@@ -49,9 +48,26 @@ vim.keymap.set("i", "kj", "<Esc>", {
 })
 vim.keymap.set("n", "<leader>q", vim.diagnostic.setloclist, { desc = "Open diagnostic [Q]uickfix list" })
 
+-- Function to get mode name
+function _G.get_mode()
+  local mode_map = {
+    n = "NORMAL",
+    i = "INSERT",
+    v = "VISUAL",
+    V = "V-LINE",
+    c = "COMMAND",
+    R = "REPLACE",
+    s = "SELECT",
+    S = "S-LINE",
+    t = "TERMINAL",
+  }
+  return mode_map[vim.fn.mode()] or vim.fn.mode()
+end
+
 -- Function to setup the statusline
 function _G.statusline()
   local statusline = ""
+  statusline = statusline .. " %{v:lua.get_mode()} "
   statusline = statusline .. " %<%f%m "
   statusline = statusline .. "%="
   statusline = statusline .. " %l:%c/%L "
@@ -60,7 +76,8 @@ function _G.statusline()
   return statusline
 end
 
-vim.opt.statusline = "%!v:lua.statusline()"
+vim.o.showmode = false -- NOTE: Don't show showmode
+vim.o.statusline = "%!v:lua.statusline()"
 
 -- NOTE: Redraws status every second
 local timer = vim.loop.new_timer()
@@ -170,11 +187,20 @@ end
 -- Key mapping to toggle wrap (using <Leader>w)
 vim.api.nvim_set_keymap("n", "<leader>w", ":lua toggle_wrap()<CR>", { noremap = true, silent = true })
 
--- Use Ctrl+hjkl to navigate between splits/windows
-vim.keymap.set("n", "<C-h>", "<C-w>h", { noremap = true, silent = true, desc = "Move to left window" })
-vim.keymap.set("n", "<C-j>", "<C-w>j", { noremap = true, silent = true, desc = "Move to window below" })
-vim.keymap.set("n", "<C-k>", "<C-w>k", { noremap = true, silent = true, desc = "Move to window above" })
-vim.keymap.set("n", "<C-l>", "<C-w>l", { noremap = true, silent = true, desc = "Move to right window" })
+--- @type boolean
+vim.g.format_on_save_enabled = false
+
+-- Toggle autoformat with conform
+function _G.toggle_conform()
+  vim.g.format_on_save_enabled = not vim.g.format_on_save_enabled
+  if vim.g.format_on_save_enabled then
+    print "Format on save enabled"
+  else
+    print "Format on save disabled"
+  end
+end
+
+vim.api.nvim_set_keymap("n", "<leader>tf", ":lua toggle_conform()<CR>", { noremap = true, silent = true })
 
 -- Load lazy
 require "config.lazy"
