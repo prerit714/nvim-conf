@@ -2,7 +2,7 @@ return {
   "folke/trouble.nvim",
   opts = {
     win = {
-      position = "right",
+      position = "bottom",
     },
   },
   cmd = "Trouble",

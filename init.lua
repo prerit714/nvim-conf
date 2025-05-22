@@ -61,16 +61,19 @@ function _G.statusline()
 end
 
 vim.opt.statusline = "%!v:lua.statusline()"
----@diagnostic disable-next-line: undefined-field
+
+-- NOTE: Redraws status every second
 local timer = vim.loop.new_timer()
-timer:start(
-  1000,
-  1000,
-  vim.schedule_wrap(function()
-    -- Force statusline update
-    vim.cmd "redrawstatus"
-  end)
-)
+if timer ~= nil then
+  timer:start(
+    1000,
+    1000,
+    vim.schedule_wrap(function()
+      -- Force statusline update
+      vim.cmd "redrawstatus"
+    end)
+  )
+end
 
 vim.opt.laststatus = 2
 
